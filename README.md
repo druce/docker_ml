@@ -111,7 +111,7 @@ docker build -t docker_ml .
 
   - Current working directory on the host will be mounted as `/home/ubuntu/local` in the container, edit as necessary for access to your notebooks
 
-  - Connect to the Jupyter server on port 8888 using https://<your_ip> . Ignore warnings about the self-signed https certificate.
+  - Connect to the Jupyter server on port 8888 using https://<your_ip> . Ignore warnings about the self-signed https certificate. If you are connecting to a remote server via a firewall, make sure that port allows incoming traffic from your IP.
 
   - Password will be `root`
 
@@ -150,7 +150,7 @@ docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/
   docker rm <container_id>
   # remove an image
   docker image rm <container_id>
-# clean up images to save disk space
+  # clean up images to save disk space
   docker image prune --all
   # clean up containers
   docker container prune
