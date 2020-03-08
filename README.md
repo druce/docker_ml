@@ -1,5 +1,3 @@
-#Docker For Machine Learning
-
 #### A Docker configuration for machine learning
 
 **1) [Install Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/) per website docs, TL;DR:** 
@@ -47,6 +45,7 @@ docker run hello-world
 ```
 
 **2) Install  nvidia-docker for GPU support** (skip if you don't have/need Nvidia GPU support) 
+Run `nvidia-smi` to make sure you have GPU support and current drivers. See [Nvidia](https://devblogs.nvidia.com/gpu-containers-runtime/) for more information.
 
 ​	a) Add Nvidia apt key
 
@@ -87,7 +86,7 @@ sudo docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
 - If you don't want GPU support, edit the Dockerfile
   - comment out ```FROM nvidia/cuda```
   - uncomment ```FROM ubuntu```
-- Build the container (this will take a long long and > 10GB of disk space)
+- Build the container (this will take a long long time and > 10GB of disk space)
 
 ```bash
 docker build -t docker_ml .
