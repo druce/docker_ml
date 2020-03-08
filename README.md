@@ -4,11 +4,11 @@ Why Docker for machine learning?
 
 - *Portability*: Move your ML environment easily from AWS to Google Cloud to Azure to your laptop to corporate cloud.
 - *Reproduceability*: Save the image of the Docker container that ran a set of research experiments in a  repository, and as long as the repo, Docker and suitable hardware are around, you can reproduce the environment and experiments exactly.
-- *Production integration*: Modern cloud-based applications are increasingly loosely coupled microservices in containers. Take an ML model container, add a Flask service, and you have a nearly production-ready microservice, in a package the production team can easily understand and integrate.
+- *Production integration*: Modern cloud-based applications are increasingly loosely coupled microservices in containers. Take an ML model container, add a Flask REST API, and you have a (nearly) production-ready microservice, or at least one in a package the production team can easily understand and integrate.
 
 Once you've captured your environment as code, you can save it, move it around and reproduce many copies of complex environments with one or two commands.
 
-This is set up to run on an instance with 50GB of disk space and GPU. Caveat: I'm a Docker neophyte, this may not follow best practices, I am trying to install everything under the sun I may need, YMMV.
+This is set up to run on an instance with 50GB of disk space and GPU. Caveat: I'm a Docker neophyte, this may not follow best practices, I am trying to install everything under the sun I may need, tested only on Ubuntu, YMMV.
 
 **1) [Install Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/) per website docs, TL;DR:** 
 
@@ -55,7 +55,7 @@ docker run hello-world
 ```
 
 **2) Install  nvidia-docker for GPU support** (skip if you don't have/need Nvidia GPU support) 
-Run `nvidia-smi` to make sure you have GPU support and current drivers. See [Nvidia](https://devblogs.nvidia.com/gpu-containers-runtime/) for more information.
+Before installing, run `nvidia-smi` to make sure you have OS GPU support / drivers. See [Nvidia](https://devblogs.nvidia.com/gpu-containers-runtime/) for more information.
 
 ​	*a)* Add Nvidia apt key
 
