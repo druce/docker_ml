@@ -1,8 +1,17 @@
 #### A Docker configuration for machine learning
 
+Why Docker for machine learning?
+
+- *Portability*: Move your ML environment easily from AWS to Google Cloud to Azure to your laptop to corporate cloud.
+- *Reproduceability*: Save the image of the Docker container that ran a set of research experiments in a  repository, and as long as the repo, Docker and suitable hardware are around, you can reproduce the environment and experiments exactly.
+
+Once you've captured your environment as code, you can save it, move it around and reproduce many copies of complex environments with one or two commands.
+
+This is set up to run on an instance with 50GB of disk space and GPU. Caveat: I'm a Docker neophyte, this may not follow best practices, I am trying to install everything under the sun I may need, YMMV.
+
 **1) [Install Docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/) per website docs, TL;DR:** 
 
-​	a) Install Docker requirements
+​	*a)* Install Docker prerequisites
 
 ```bash
 sudo apt-get -y install \
@@ -10,11 +19,11 @@ sudo apt-get -y install \
     ca-certificates \
     curl \
     gnupg-agent \
-    software-properties-common \
+    software-properties-common 
 
 ```
 
-​	b) Add GPG key and repository to apt
+​	*b)* Add GPG key and repository to apt
 
 ```bash
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -25,20 +34,20 @@ sudo add-apt-repository \
    stable"
 ```
 
-​	c) Install
+​	*c)* Install
 
 ```bash
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
-​	d) Add user to Docker group (log in and out to make changes take effect)
+​	*d)* Add user to Docker group (log in and out to make changes take effect)
 
 ```bash
 sudo usermod -aG docker ${USER}
 ```
 
-​	e) Test Docker
+​	*e)* Test Docker
 
 ```bash
 docker run hello-world
@@ -47,40 +56,40 @@ docker run hello-world
 **2) Install  nvidia-docker for GPU support** (skip if you don't have/need Nvidia GPU support) 
 Run `nvidia-smi` to make sure you have GPU support and current drivers. See [Nvidia](https://devblogs.nvidia.com/gpu-containers-runtime/) for more information.
 
-​	a) Add Nvidia apt key
+​	*a)* Add Nvidia apt key
 
 ```bash
-curl -sL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -n
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 ```
 
-​	b) Add apt repos
+​	*b)* Add apt repos
 
 ```bash
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -sL https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-sudo apt update
-
+distrib=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -sL https://nvidia.github.io/nvidia-docker/$distrib/nvidia-docker.list | \
+sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt-get update
 ```
 
-​	c) Install nvidia-docker2
+​	*c)* Install nvidia-docker2
 
 ```bash
 sudo apt install -y nvidia-docker2
 ```
 
-​	d) Restart Docker
+​	*d)* Restart Docker
 
 ```bash
 sudo pkill -SIGHUP dockerd
 ```
 
-​	e) Check docker sees GPU
+​	*e)* Check docker sees GPU
 
 ```bash
 sudo docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
 ```
 
-**3) Build the container** 
+**3) Build the docker_ml container** 
 
 - cd to the directory containing Dockerfile
 - If you don't want GPU support, edit the Dockerfile
@@ -97,21 +106,39 @@ docker build -t docker_ml .
 - For Jupyter:
 
   ```bash
-  docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/docker_ml" --rm docker_ml
+  docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/local" --rm docker_ml
   ```
 
-  - Current working directory will be mounted as `/home/ubuntu/docker_ml` , edit as necessary for access to your notebooks
-  - Connect to the Jupyter server on port 8888
+  - Current working directory on the host will be mounted as `/home/ubuntu/local` in the container, edit as necessary for access to your notebooks
+
+  - Connect to the Jupyter server on port 8888 using https://<your_ip> . Ignore warnings about the self-signed https certificate.
+
   - Password will be `root`
 
-- For command line:
+  - To check for functioning GPU, create a new Python notebook and say
+
+    ```python
+    import tensorflow as tf
+    print(tf.__version__)
+    print(tf.config.list_physical_devices('GPU'))
+    
+    2.1.0
+    [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+    ```
+
+- For a command line:
 
 ```bash
-docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/docker_ml" -it --rm docker_ml bash
+docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/local" -it --rm docker_ml bash
 ```
 
-- Docker is beyond the scope (see [https://docker-curriculum.com/](https://docker-curriculum.com/)) but a few commands to get started:
+- Docker is beyond the scope of this document. See for example:
 
+  - [https://docker-curriculum.com/](https://docker-curriculum.com/)
+  - https://github.com/wsargent/docker-cheat-sheet
+  - https://dockerbook.com/
+  - Neverthless. a few commands to get started:
+  
   ```bash
   # show containers
   docker ps -a
@@ -123,10 +150,10 @@ docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/
   docker rm <container_id>
   # remove an image
   docker image rm <container_id>
-  # clean up images to save disk space
+# clean up images to save disk space
   docker image prune --all
   # clean up containers
   docker container prune
   ```
-
+  
   

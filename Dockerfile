@@ -12,15 +12,15 @@ ARG PYTHON_VERSION=3.6
 # run updates
 RUN apt-get -y update && yes|apt upgrade
 
-# run apt installs
+# run apt installs necessary for Anaconda
 RUN apt-get update --fix-missing && \
     apt-get install -y wget bzip2 sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# more installs for opencv for rllib
+# more installs for opencv for rllib, quality of life
 RUN apt-get update --fix-missing && \
-    apt-get install -y libsm6 libxrender1 libfontconfig1 build-essential libglib2.0-0 libxext6 libxrender-dev emacs && \
+    apt-get install -y libsm6 libxrender1 libfontconfig1 build-essential libglib2.0-0 libxext6 libxrender-dev emacs git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -55,7 +55,7 @@ ENV PATH /home/ubuntu/anaconda3/bin:$PATH
 RUN conda init
 RUN conda update conda
 # updates everything, or a lot of stuff
-RUN conda update anaconda
+# RUN conda update anaconda
 RUN conda create --name tf_gpu tensorflow-gpu python=${PYTHON_VERSION}
 
 # Create tf env
@@ -70,21 +70,15 @@ RUN conda install -y pandas tabulate matplotlib seaborn jupyter
 RUN pip install gym opencv-python lz4 ray ray[debug] msgpack
 
 # Configure access to Jupyter with password 'root'
-WORKDIR "/home/ubuntu"
-RUN mkdir /home/ubuntu/notebooks
-
 RUN mkdir -p '/home/ubuntu/.jupyter'
 COPY jupyter_notebook_config.py /home/ubuntu/.jupyter/jupyter_notebook_config.py
-# RUN jupyter notebook --generate-config
-# RUN echo "c.NotebookApp.password = \"sha1:6a3f528eec40:6e896b6e4828f525a6e20e5411cd1c8075d68619\"" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
-# RUN echo "c.NotebookApp.allow_remote_access = True" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
-# RUN echo "c.NotebookApp.ip = \"*\"" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
 
 # install a certificate and configure SSL
+# openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout mycert.pem -out mycert.pem
+# <hit enter for everything>
 RUN mkdir -p '/home/ubuntu/certs'
 COPY mycert.pem /home/ubuntu/certs/mycert.pem
 
-# RUN echo "c.NotebookApp.certfile = \"/home/ubuntu/certs/mycert.pem\" #location of your certificate file"  >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
 
 RUN echo "#!/bin/bash" > runjupyter.sh
 RUN echo "/home/ubuntu/anaconda3/envs/tf_gpu/bin/jupyter notebook --notebook-dir=/home/ubuntu --no-browser" >> runjupyter.sh
