@@ -4,7 +4,7 @@
 FROM nvidia/cuda
 # FROM ubuntu
 
-# in general just getting latest packages
+# just get latest versions from conda
 # not pinning module versions via requirements.txt
 ARG CONDA_VERSION=2019.10
 ARG PYTHON_VERSION=3.6
@@ -18,15 +18,12 @@ RUN apt-get update --fix-missing && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# more installs for opencv for rllib, quality of life
+# more installs for for rllib
 RUN apt-get update --fix-missing && \
-    apt-get install -y libsm6 libxrender1 libfontconfig1 build-essential libglib2.0-0 libxext6 libxrender-dev emacs git && \
+    apt-get install -y libsm6 libxrender1 libfontconfig1 build-essential libglib2.0-0 libxext6 libxrender-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-
-# make a ubuntu user
-# Add sudo
 # Add user ubuntu with no password, add to sudo group
 RUN adduser --disabled-password --gecos '' ubuntu
 RUN adduser ubuntu sudo
@@ -45,7 +42,7 @@ ENV PATH /home/ubuntu/anaconda3/bin:$PATH
 # Miniconda install
 # https://docs.conda.io/en/latest/miniconda.html
 # RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-# some cert problem
+# some cert problem sometimes
 # RUN wget --no-check-certificate       https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 # RUN bash Miniconda3-latest-Linux-x86_64.sh -b
 # RUN rm Miniconda3-latest-Linux-x86_64.sh
@@ -56,9 +53,9 @@ RUN conda init
 RUN conda update conda
 # updates everything, or a lot of stuff
 # RUN conda update anaconda
-RUN conda create --name tf_gpu tensorflow-gpu python=${PYTHON_VERSION}
 
 # Create tf env
+RUN conda create --name tf_gpu tensorflow-gpu python=${PYTHON_VERSION}
 # https://pythonspeed.com/articles/activate-conda-dockerfile/
 SHELL ["conda", "run", "-n", "tf_gpu", "/bin/bash", "-c"]
 RUN conda update --all
@@ -66,6 +63,7 @@ RUN conda update --all
 # sometimes anaconda has eg tf 2.0 and we want tf 2.1
 # pip install --upgrade tensorflow
 
+# install anaconda packages not in tensorflow-gpu by default
 RUN conda install -y pandas tabulate matplotlib seaborn jupyter
 RUN pip install gym opencv-python lz4 ray ray[debug] msgpack
 
@@ -78,7 +76,6 @@ COPY jupyter_notebook_config.py /home/ubuntu/.jupyter/jupyter_notebook_config.py
 # <hit enter for everything>
 RUN mkdir -p '/home/ubuntu/certs'
 COPY mycert.pem /home/ubuntu/certs/mycert.pem
-
 
 RUN echo "#!/bin/bash" > runjupyter.sh
 RUN echo "/home/ubuntu/anaconda3/envs/tf_gpu/bin/jupyter notebook --notebook-dir=/home/ubuntu --no-browser" >> runjupyter.sh
