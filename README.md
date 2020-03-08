@@ -84,10 +84,10 @@ sudo apt install -y nvidia-docker2
 sudo pkill -SIGHUP dockerd
 ```
 
-​	*e)* Check docker sees GPU
+​	*e)* Test container, should see GPU (takes a minute, downloads a couple of gigs)
 
 ```bash
-sudo docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
+docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
 ```
 
 **3) Build the docker_ml container** 
@@ -96,13 +96,15 @@ sudo docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
 - If you don't want GPU support, edit the Dockerfile
   - comment out ```FROM nvidia/cuda```
   - uncomment ```FROM ubuntu```
-- Build the container (this will take a long long time and > 10GB of disk space)
+- Build the container (this will take a long long time (~20 minutes) and > 10GB of disk space)
 
 ```bash
 docker build -t docker_ml .
 ```
 
 **4) Run the container**
+
+Once built it launches in seconds.
 
 - For Jupyter:
 
