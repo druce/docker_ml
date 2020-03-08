@@ -4,6 +4,7 @@ Why Docker for machine learning?
 
 - *Portability*: Move your ML environment easily from AWS to Google Cloud to Azure to your laptop to corporate cloud.
 - *Reproduceability*: Save the image of the Docker container that ran a set of research experiments in a  repository, and as long as the repo, Docker and suitable hardware are around, you can reproduce the environment and experiments exactly.
+- *Production integration*: Modern cloud-based applications are increasingly loosely coupled microservices in containers. Take an ML model container, add a Flask service, and you have a nearly production-ready microservice, in a package the production team can easily understand and integrate.
 
 Once you've captured your environment as code, you can save it, move it around and reproduce many copies of complex environments with one or two commands.
 
