@@ -56,7 +56,7 @@ RUN conda init
 RUN conda update conda
 # updates everything, or a lot of stuff
 RUN conda update anaconda
-RUN conda create --name tf_gpu tensorflow-gpu
+RUN conda create --name tf_gpu tensorflow-gpu python=${PYTHON_VERSION}
 
 # Create tf env
 # https://pythonspeed.com/articles/activate-conda-dockerfile/
@@ -72,12 +72,18 @@ RUN pip install gym opencv-python lz4 ray ray[debug] msgpack
 # Configure access to Jupyter with password 'root'
 WORKDIR "/home/ubuntu"
 RUN mkdir /home/ubuntu/notebooks
-RUN jupyter notebook --generate-config
-RUN echo "c.NotebookApp.password = \"sha1:6a3f528eec40:6e896b6e4828f525a6e20e5411cd1c8075d68619\"" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
-RUN echo "c.NotebookApp.allow_remote_access = True" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
-RUN echo "c.NotebookApp.ip = \"*\"" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
 
-# should install a certificate and configure SSL
+RUN mkdir -p '/home/ubuntu/.jupyter'
+COPY jupyter_notebook_config.py /home/ubuntu/.jupyter/jupyter_notebook_config.py
+# RUN jupyter notebook --generate-config
+# RUN echo "c.NotebookApp.password = \"sha1:6a3f528eec40:6e896b6e4828f525a6e20e5411cd1c8075d68619\"" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
+# RUN echo "c.NotebookApp.allow_remote_access = True" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
+# RUN echo "c.NotebookApp.ip = \"*\"" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
+
+# install a certificate and configure SSL
+RUN mkdir -p '/home/ubuntu/certs'
+COPY mycert.pem /home/ubuntu/certs/mycert.pem
+
 # RUN echo "c.NotebookApp.certfile = \"/home/ubuntu/certs/mycert.pem\" #location of your certificate file"  >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
 
 RUN echo "#!/bin/bash" > runjupyter.sh
