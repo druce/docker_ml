@@ -92,7 +92,7 @@ sudo docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
 
 **3) Build the docker_ml container** 
 
-- cd to the directory containing Dockerfile
+- Clone this repo. `cd` to the top-level directory containing Dockerfile
 - If you don't want GPU support, edit the Dockerfile
   - comment out ```FROM nvidia/cuda```
   - uncomment ```FROM ubuntu```
