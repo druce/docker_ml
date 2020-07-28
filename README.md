@@ -138,7 +138,7 @@ docker run --runtime=nvidia --name docker_ml -p 8888:8888 -v "$PWD:/home/ubuntu/
 - Docker is beyond the scope of this document. See for example:
 
   - [https://docker-curriculum.com/](https://docker-curriculum.com/)
-  - https://github.com/wsargent/docker-cheat-sheet
+  - http://dockerlabs.collabnix.com/docker/cheatsheet/
   - https://dockerbook.com/
   - Neverthless. a few commands to get started:
   
